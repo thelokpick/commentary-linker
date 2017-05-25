@@ -2,7 +2,18 @@
 '''
 usage: python commentLatinPairer.py *path to directory containing latin files* *path to commentary file* *path to output file*
 *latin file ID* *number latin files* *english words file path*
-example: python commentLatinPairer.py files/latin/ files/comments/Anthon.txt files/commentLatinPair BG 11 files/english/words
+examples: 
+	Anthon: python commentLatinPairer.py files/latin/ files/comments/Anthon.txt files/output/Anthon_output BG 11 files/english/words
+	Bond: python commentLatinPairer.py files/latin/ files/comments/Bond.txt files/output/Bond_output BG 11 files/english/words
+	Cannon: python commentLatinPairer.py files/latin/ files/comments/Cannon.txt files/output/Cannon_output BG 11 files/english/words
+	- ERROR
+	Colbeck: 
+	- This is a commentary on book 6; make it so that you can define the bottom of the range of books rather than the max
+	Collar97:
+	- This is a commentary on book 2
+
+
+
 
 file system setup: this program should be run s.t. the latin files are stored like
 'files/latin/BG1'
