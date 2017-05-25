@@ -112,7 +112,7 @@ def ingestLatin(inputFile, bookTitle, latinSentences, latinWordCount):
 
 
 
-def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minCommentLength=10):
+def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minCommentLength=10, firstBook=1):
 	latinWordCount = Counter()
 	latinSentences = []
 	commentLines = []
@@ -120,7 +120,7 @@ def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minComm
 	englishWords = set()
 
 	# ingest latin
-	for i in range(1, numBooks+1):
+	for i in range(firstBook, numBooks+1):
 		bookTitle = textName +' BOOK '+str(i)
 		latinWordCount, latinSentences = ingestLatin(latinPath + textName + str(i), bookTitle, latinSentences, latinWordCount)
 
@@ -281,16 +281,17 @@ def writeCommentDictToFile(d, filename='output.txt'):
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 7:
-		print ("usage: python commentLatinPairer.py *path to directory containing latin files* *path to commentary file* *path to output file*")
+	if len(sys.argv) != 8:
+		print ("usage: python commentLatinPairer.py *path to directory containing latin files* *path to commentary file* *path to output file* *book ID* *first book number* *last book number* *path to file with english words*")
 		quit()
 	latinPath = sys.argv[1]
 	commentFilePath = sys.argv[2]
 	outputFilePath = sys.argv[3]
 	bookID = sys.argv[4]
-	numBooks = int(sys.argv[5])
-	englishFilePath = sys.argv[6]
-	latinWordCount, latinSentences, commentLines, englishWords = ingestInput(bookID, numBooks, latinPath, commentFilePath, englishFilePath)
+	firstBook = int(sys.argv[5])
+	numBooks = int(sys.argv[6])
+	englishFilePath = sys.argv[7]
+	latinWordCount, latinSentences, commentLines, englishWords = ingestInput(bookID, numBooks, latinPath, commentFilePath, englishFilePath, firstBook)
 	commentDict, accuracy = pairLatinComments(latinWordCount, latinSentences, commentLines, englishWords)
 	print accuracy*100, '% of comments matched'
 	writeCommentDictToFile(commentDict, filename=outputFilePath)
