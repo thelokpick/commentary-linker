@@ -1,17 +1,49 @@
-
 '''
 usage: python commentLatinPairer.py *path to directory containing latin files* *path to commentary file* *path to output file*
-*latin file ID* *number latin files* *english words file path*
+*latin file ID* *first book #* *last book #* *english words file path*
 examples: 
-	Anthon: python commentLatinPairer.py files/latin/ files/comments/Anthon.txt files/output/Anthon_output BG 11 files/english/words
-	Bond: python commentLatinPairer.py files/latin/ files/comments/Bond.txt files/output/Bond_output BG 11 files/english/words
-	Cannon: python commentLatinPairer.py files/latin/ files/comments/Cannon.txt files/output/Cannon_output BG 11 files/english/words
-	- ERROR
-	Colbeck: 
-	- This is a commentary on book 6; make it so that you can define the bottom of the range of books rather than the max
-	Collar97:
-	- This is a commentary on book 2
-
+	Anthon: python commentLatinPairer.py files/latin/ files/comments/Anthon.txt files/output/Anthon_output BG 1 11 files/english/words
+	- books 1-7
+	Bond: python commentLatinPairer.py files/latin/ files/comments/Bond.txt files/output/Bond_output BG 1 11 files/english/words
+	Cannon: python commentLatinPairer.py files/latin/ files/comments/Cannon.txt files/output/Cannon_output BG 1 1 files/english/words
+	- first half of book 1
+	Colbeck: python commentLatinPairer.py files/latin/ files/comments/Colbeck.txt files/output/Colbeck_output BG 6 6 files/english/words
+	- book 6
+	Collar97: python commentLatinPairer.py files/latin/ files/comments/Collar97.txt files/output/Collar97_output BG 2 2 files/english/words
+	- book 2
+	Finch98: python commentLatinPairer.py files/latin/ files/comments/Finch98.txt files/output/Finch98_output BG 1 1 files/english/words
+	- book 1
+	Harkness01: python commentLatinPairer.py files/latin/ files/comments/Harkness01.txt files/output/Harkness01_output BG 1 4 files/english/words
+	- first four books
+	Harper: python commentLatinPairer.py files/latin/ files/comments/Harper.txt files/output/Harper_output BG 1 4 files/english/words
+	- first four books
+	Hodges: python commentLatinPairer.py files/latin/ files/comments/Hodges.txt files/output/Hodges_output BG 1 6 files/english/words
+	- first six books
+	Merryweather: python commentLatinPairer.py files/latin/ files/comments/Merryweather.txt files/output/Merryweather_output BG 1 3 files/english/words
+	- books 1-3
+	Moberly: python commentLatinPairer.py files/latin/ files/comments/Moberly.txt files/output/Moberly_output BG 1 11 files/english/words
+	Peskett84: python commentLatinPairer.py files/latin/ files/comments/Peskett84.txt files/output/Peskett84_output BG 1 3 files/english/words
+	- books 1-3
+	Peskett85: python commentLatinPairer.py files/latin/ files/comments/Peskett85.txt files/output/Peskett85_output BG 8 8 files/english/words
+	- book 8
+	Peskett90: python commentLatinPairer.py files/latin/ files/comments/Peskett90.txt files/output/Peskett90_output BG 6 6 files/english/words
+	- book 6
+	Peskett92: python commentLatinPairer.py files/latin/ files/comments/Peskett92.txt files/output/Peskett92_output BG 7 7 files/english/words
+	- book 7
+	Peskett99: python commentLatinPairer.py files/latin/ files/comments/Peskett99.txt files/output/Peskett99_output BG 3 3 files/english/words
+	- books 4-5
+	Rutherford: python commentLatinPairer.py files/latin/ files/comments/Rutherford.txt files/output/Rutherford_output BG 2 3 files/english/words
+	- books 2-3
+	Spencer: python commentLatinPairer.py files/latin/ files/comments/Spencer.txt files/output/Spencer_output BG 1 7 files/english/words
+	- books 1-7
+	Stuart: python commentLatinPairer.py files/latin/ files/comments/Stuart.txt files/output/Stuart_output BG 1 4 files/english/words
+	- books 1-4
+	Walpole: python commentLatinPairer.py files/latin/ files/comments/Walpole.txt files/output/Walpole_output BG 1 1 files/english/words
+	- book 1
+	Westcott: python commentLatinPairer.py files/latin/ files/comments/Westcott.txt files/output/Westcott_output BG 1 4 files/english/words
+	- books 1-4
+	Wilson: python commentLatinPairer.py files/latin/ files/comments/Wilson.txt files/output/Wilson_output BG 4 5 files/english/words
+	- books 4-5
 
 
 
@@ -112,7 +144,7 @@ def ingestLatin(inputFile, bookTitle, latinSentences, latinWordCount):
 
 
 
-def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minCommentLength=10, firstBook=1):
+def ingestInput(textName, lastBook, latinPath, commentPath, englishPath, minCommentLength=10, firstBook=1):
 	latinWordCount = Counter()
 	latinSentences = []
 	commentLines = []
@@ -120,7 +152,7 @@ def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minComm
 	englishWords = set()
 
 	# ingest latin
-	for i in range(firstBook, numBooks+1):
+	for i in range(firstBook, lastBook+1):
 		bookTitle = textName +' BOOK '+str(i)
 		latinWordCount, latinSentences = ingestLatin(latinPath + textName + str(i), bookTitle, latinSentences, latinWordCount)
 
@@ -129,6 +161,9 @@ def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minComm
 		commentLines = f.readlines()
 		commentLines = [x.strip().replace('Digitized by Google', '') for x in commentLines]
 		comments.append(commentLines[0])
+		if len(comments) == 0:
+			print "nothin in comments file"
+			quit()
 		for line in commentLines[1:]:
 			'''
 			preprocess comments so that
@@ -136,10 +171,12 @@ def ingestInput(textName, numBooks, latinPath, commentPath, englishPath, minComm
 			2. all comments are a minumum length
 			3. don't append next line if it starts with a number (because this probably means it's a new comment)
 			'''
+			if len(line) == 0:
+				continue
 			if comments[-1][-1] not in commentEndChars or len(comments[-1]) < minCommentLength and not RepresentsInt(line.strip()[0]):
-				comments[-1] += line
+				comments[-1] += line.strip()
 			else:
-				comments.append(line)
+				comments.append(line.strip())
 
 	# ingest english words
 	with open(englishPath, 'r') as f:
@@ -289,9 +326,9 @@ if __name__ == "__main__":
 	outputFilePath = sys.argv[3]
 	bookID = sys.argv[4]
 	firstBook = int(sys.argv[5])
-	numBooks = int(sys.argv[6])
+	lastBook = int(sys.argv[6])
 	englishFilePath = sys.argv[7]
-	latinWordCount, latinSentences, commentLines, englishWords = ingestInput(bookID, numBooks, latinPath, commentFilePath, englishFilePath, firstBook)
+	latinWordCount, latinSentences, commentLines, englishWords = ingestInput(bookID, lastBook, latinPath, commentFilePath, englishFilePath, firstBook)
 	commentDict, accuracy = pairLatinComments(latinWordCount, latinSentences, commentLines, englishWords)
 	print accuracy*100, '% of comments matched'
 	writeCommentDictToFile(commentDict, filename=outputFilePath)
